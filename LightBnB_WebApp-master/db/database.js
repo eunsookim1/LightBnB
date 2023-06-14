@@ -90,7 +90,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   LIMIT $2;
   `, [guest_id, limit])
     .then(res => {
-      console.log(res.rows[0]);
+      console.log(res.rows);
       return res.rows;
     });
 };
@@ -110,7 +110,7 @@ const getAllReservations = function(guest_id, limit = 10) {
 //   return Promise.resolve(limitedProperties);
 // };
 
-const getAllProperties = (options, limit = 10) => { // what does options represent?
+const getAllProperties1 = (options, limit = 10) => {
   return pool
     .query(`SELECT * FROM properties LIMIT $1`, [limit])
     .then((result) => {
@@ -122,8 +122,71 @@ const getAllProperties = (options, limit = 10) => { // what does options represe
     });
 };
 
+const getAllProperties = (options, limit = 10) => {
+  // 1
+  const queryParams = [];
 
+  // 2
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
 
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    queryString += `${filter(queryParams)} city LIKE $${queryParams.length} `;
+  }
+
+  // cost
+  if (options.minimum_price_per_night) {
+    queryParams.push(`${options.minimum_price_per_night}`);
+    queryString += `${filter(queryParams)} cost_per_night >= $${queryParams.length} * 100 `;
+  }
+
+  if (options.maximum_price_per_night) {
+    queryParams.push(`${options.maximum_price_per_night}`);
+    queryString += `${filter(queryParams)} cost_per_night <= $${queryParams.length} * 100 `;
+  }
+
+  // 4
+  
+  queryString += `
+  GROUP BY properties.id
+  `;
+
+  // minimum rating
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `;
+  }
+  
+  queryParams.push(limit);
+  queryString += `
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+  `;
+
+  // 5
+  console.log(queryString, queryParams);
+
+  // 6
+  return pool.query(queryString, queryParams).then((res)=> res.rows);
+};
+
+// write a helper function to help filter the texts to add my AND and WHERE's
+// do I need to write catch err?
+
+// helper function?
+const filter = (queryParams) => {
+  let queryString = '';
+  if (queryParams.length === 1) {
+    queryString += 'WHERE';
+  } else {
+    queryString += 'AND';
+  }
+  return queryString;
+};
 /**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
@@ -144,3 +207,12 @@ module.exports = {
   getAllProperties,
   addProperty,
 };
+
+
+// SELECT properties.*, avg(property_reviews.rating) as average_rating
+//   FROM properties
+//   JOIN property_reviews ON properties.id = property_id
+//   GROUP BY properties.id
+//   HAVING  avg(property_reviews.rating) >= 1
+//   ORDER BY cost_per_night
+//   LIMIT 20;
