@@ -1,5 +1,12 @@
 # LightBnB
-hihi
+This is a database application project. The front-end is forked from [lighthouse-labs' LightBnB_WebApp](https://github.com/lighthouse-labs/LightBnB_WebApp).
+
+## Instructions
+1. Install the **LightBnB_WebApp** 
+2. `npm install`
+3. run it `npm run local`
+4. View the browser at [localhost:3000](localhost:3000)
+
 ## Project Structure
 
 ```
@@ -15,7 +22,7 @@ hihi
 │   │   │   ├── new_property_form.js
 │   │   │   ├── property_listing.js
 │   │   │   ├── property_listings.js
-│   │   │   ├── sezarch_form.js
+│   │   │   ├── search_form.js
 │   │   │   └── signup_form.js
 │   │   ├── libraries
 │   │   ├── index.js
@@ -53,3 +60,10 @@ hihi
 * `routes` contains the router files which are responsible for any HTTP requests to `/users/something` or `/api/something`. 
 * `styles` contains all of the sass files. 
 * `server.js` is the entry point to the application. This connects the routes to the database.
+
+
+## ERD Diagram
+The diagram shows the structure of the database of LightBnB 
+[diagram](https://i.imgur.com/IPbSqz9.png)
+
+
