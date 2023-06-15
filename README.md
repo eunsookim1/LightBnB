@@ -10,7 +10,7 @@ The front-end is forked from [Lighthouse-labs' LightBnB_Webapp](https://github.c
 
 
 ## ERD Diagram
-[ERD Diagram](https://i.imgur.com/IPbSqz9.png)
+![ERD Diagram](https://i.imgur.com/IPbSqz9.png)
 
 ## Project Structure
 
