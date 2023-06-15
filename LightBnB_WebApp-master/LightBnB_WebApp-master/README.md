@@ -15,7 +15,7 @@ hihi
 │   │   │   ├── new_property_form.js
 │   │   │   ├── property_listing.js
 │   │   │   ├── property_listings.js
-│   │   │   ├── search_form.js
+│   │   │   ├── sezarch_form.js
 │   │   │   └── signup_form.js
 │   │   ├── libraries
 │   │   ├── index.js
