@@ -174,9 +174,7 @@ const getAllProperties = (options, limit = 10) => {
   return pool.query(queryString, queryParams).then((res)=> res.rows);
 };
 
-// write a helper function to help filter the texts to add my AND and WHERE's
-
-// helper function?
+// A helper function to help filter the texts to add my AND and WHERE
 const filter = (queryParams) => {
   let queryString = '';
   if (queryParams.length === 1) {
