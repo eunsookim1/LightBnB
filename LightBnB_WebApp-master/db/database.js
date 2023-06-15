@@ -175,7 +175,6 @@ const getAllProperties = (options, limit = 10) => {
 };
 
 // write a helper function to help filter the texts to add my AND and WHERE's
-// do I need to write catch err?
 
 // helper function?
 const filter = (queryParams) => {
