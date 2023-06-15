@@ -1,4 +1,16 @@
 # LightBnB
+This is a database application project from Lighthouse Labs program. 
+The front-end is forked from [Lighthouse-labs' LightBnB_Webapp](https://github.com/lighthouse-labs/LightBnB_WebApp).
+
+
+## Instructions
+1. Install LightBnB_WebApp `npm install`
+2. Run `npm run local`
+3. View the browser at [localhost:3000](localhost:3000)
+
+
+## ERD Diagram
+[ERD Diagram](https://i.imgur.com/IPbSqz9.png)
 
 ## Project Structure
 
