@@ -76,18 +76,19 @@ Contains seed data for the tables in the **schema.sql** file.
 These are some sample queries to run for the `lightbnb` database.
 
 
-### all_my_reservations.sql
+*  all_my_reservations.sql
 Shows all the reservations for a certain user under the user's id, limits the results to 10.
-### average_duration.sql
+
+* average_duration.sql
 Selects the average duration of all reservations.
 
-### most_visited_cities.sql
+*  most_visited_cities.sql
 Selects the most visited cities from the database with the name of the city and the number of reservations for the city.
 
-### property_listings_by_city.sql
+*  property_listings_by_city.sql
 Shows all the details of the properties located in Vancouver and the average rating for individual property. 
 The orders are from cheapest rates to most expensive. 
 There will be 10 results as there is a limit of 10 with the rating 4 or higher.
 
-### user_login.sql.sql
+*  user_login.sql.sql
 Selects id, name, email and password of a given user from the database with the email address 'tristanjacobs@gmail.com'.
