@@ -9,9 +9,6 @@ The front-end is forked from [Lighthouse-labs' LightBnB_Webapp](https://github.c
 3. View the browser at [localhost:3000](localhost:3000)
 
 
-## ERD Diagram
-![ERD Diagram](https://i.imgur.com/IPbSqz9.png)
-
 ## Project Structure
 
 ```
@@ -65,6 +62,9 @@ The front-end is forked from [Lighthouse-labs' LightBnB_Webapp](https://github.c
 * `routes` contains the router files which are responsible for any HTTP requests to `/users/something` or `/api/something`. 
 * `styles` contains all of the sass files. 
 * `server.js` is the entry point to the application. This connects the routes to the database.
+
+## ERD Diagram
+![ERD Diagram](https://i.imgur.com/IPbSqz9.png)
 
 ## Migrations
 The folder contains **schema.sql** file which creates database `lightbnb` and switches into the database.
