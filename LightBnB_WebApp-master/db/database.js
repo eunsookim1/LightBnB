@@ -1,6 +1,3 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
-
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -9,12 +6,6 @@ const pool = new Pool({
   host: 'localhost',
   database: 'lightbnb'
 });
-
-// the following assumes that you named your connection variable `pool`
-pool.query(`SELECT title FROM properties LIMIT 10;`);
-// .then(response => {console.log(response)});
-
-/// Users
 
 /**
  * Get a single user from the database given their email.
@@ -30,13 +21,11 @@ const getUserWithEmail = function(email) {
     .then(res => res.rows[0]);
 };
 
-
 /**
  * Get a single user from the database given their id.
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-
 const getUserWithId = (id) => {
   return pool.query(`
   SELECT *
@@ -46,33 +35,24 @@ const getUserWithId = (id) => {
     .then(res => res.rows[0]);
 };
 
-/**
- * Add a new user to the database.
- * @param {{name: string, password: string, email: string}} user
- * @return {Promise<{}>} A promise to the user.
- */
-
+// Add a new user to the database.
 const addUser = (user) => {
   return pool.query(`
   INSERT INTO users (name, email, password)
   VALUES ($1, $2, $3) RETURNING *
   `, [user.name, user.email, user.password]).
     then(res => {
-      console.log(res.rows[0]);
       return res.rows[0];
     });
 };
+
 /// Reservations
 
 /**
  * Get all reservations for a single user.
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
- */
-// const getAllReservations1 = function(guest_id, limit = 10) {
-//   return getAllProperties(null, 5);
-// };
-
+*/
 const getAllReservations = function(guest_id, limit = 10) {
   return pool
     .query(`
@@ -81,7 +61,7 @@ const getAllReservations = function(guest_id, limit = 10) {
     properties.*, 
     avg(property_reviews.rating) AS average_rating
   FROM reservations
-    JOIN properties ON property_id = properties.id
+    JOIN properties ON reservations.property_id = properties.id
     JOIN property_reviews ON properties.id = property_reviews.property_id
   WHERE reservations.guest_id = $1
     AND reservations.end_date < now()::date
@@ -90,10 +70,10 @@ const getAllReservations = function(guest_id, limit = 10) {
   LIMIT $2;
   `, [guest_id, limit])
     .then(res => {
-      console.log(res.rows);
       return res.rows;
     });
 };
+
 /// Properties
 
 /**
@@ -102,35 +82,25 @@ const getAllReservations = function(guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-// const getAllProperties1 = function (options, limit = 10) {
-//   const limitedProperties = {};
-//   for (let i = 1; i <= limit; i++) {
-//     limitedProperties[i] = properties[i];
-//   }
-//   return Promise.resolve(limitedProperties);
-// };
 
-const getAllProperties1 = (options, limit = 10) => {
-  return pool
-    .query(`SELECT * FROM properties LIMIT $1`, [limit])
-    .then((result) => {
-      // console.log(result.rows);
-      return result.rows;
-    })
-    .catch((err) => {
-      console.log(err.message);
-    });
+// A helper function to filter the texts to add my AND and WHERE for the getAllProperties function
+const filter = (queryParams) => {
+  let queryString = '';
+  if (queryParams.length === 1) {
+    queryString += 'WHERE';
+  } else {
+    queryString += 'AND';
+  }
+  return queryString;
 };
 
 const getAllProperties = (options, limit = 10) => {
-  // 1
   const queryParams = [];
 
-  // 2
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
-  JOIN property_reviews ON properties.id = property_id
+  JOIN property_reviews ON properties.id = property_reviews.property_id
   `;
 
   if (options.city) {
@@ -138,7 +108,6 @@ const getAllProperties = (options, limit = 10) => {
     queryString += `${filter(queryParams)} city LIKE $${queryParams.length} `;
   }
 
-  // cost
   if (options.minimum_price_per_night) {
     queryParams.push(`${options.minimum_price_per_night}`);
     queryString += `${filter(queryParams)} cost_per_night >= $${queryParams.length} * 100 `;
@@ -148,14 +117,11 @@ const getAllProperties = (options, limit = 10) => {
     queryParams.push(`${options.maximum_price_per_night}`);
     queryString += `${filter(queryParams)} cost_per_night <= $${queryParams.length} * 100 `;
   }
-
-  // 4
   
   queryString += `
   GROUP BY properties.id
   `;
 
-  // minimum rating
   if (options.minimum_rating) {
     queryParams.push(options.minimum_rating);
     queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `;
@@ -167,23 +133,9 @@ const getAllProperties = (options, limit = 10) => {
   LIMIT $${queryParams.length};
   `;
 
-  // 5
-  console.log(queryString, queryParams);
-
-  // 6
   return pool.query(queryString, queryParams).then((res)=> res.rows);
 };
 
-// A helper function to help filter the texts to add my AND and WHERE
-const filter = (queryParams) => {
-  let queryString = '';
-  if (queryParams.length === 1) {
-    queryString += 'WHERE';
-  } else {
-    queryString += 'AND';
-  }
-  return queryString;
-};
 /**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
@@ -227,12 +179,10 @@ const addProperty = (property) => {
     property.number_of_bathrooms,
     property.number_of_bedrooms,
     true
-    // why is it like this?
   ];
   
   return pool.query(queryString, queryParams)
     .then((res) => {
-      console.log(res.rows[0]);
       return res.rows[0];
     });
 };
@@ -245,12 +195,3 @@ module.exports = {
   getAllProperties,
   addProperty,
 };
-
-
-// SELECT properties.*, avg(property_reviews.rating) as average_rating
-//   FROM properties
-//   JOIN property_reviews ON properties.id = property_id
-//   GROUP BY properties.id
-//   HAVING  avg(property_reviews.rating) >= 1
-//   ORDER BY cost_per_night
-//   LIMIT 20;
