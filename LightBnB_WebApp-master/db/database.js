@@ -96,7 +96,7 @@ const filter = (queryParams) => {
 
 const getAllProperties = (options, limit = 10) => {
   const queryParams = [];
-
+  console.log(options);
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
@@ -108,19 +108,19 @@ const getAllProperties = (options, limit = 10) => {
     queryString += `${filter(queryParams)} city LIKE $${queryParams.length} `;
   }
 
-  // User puts in a dollar amount for cost per night which gets converted into cents.
-  if (options.minimum_price_per_night) {
-    queryParams.push(`${options.minimum_price_per_night}`);
-    queryString += `${filter(queryParams)} cost_per_night >= $${queryParams.length} * 100 `;
-  }
-
   if (options.owner_id) {
-    queryParams.push(`${options.owner_id}`);
+    queryParams.push(options.owner_id);
     queryString += `${filter(queryParams)} owner_id = $${queryParams.length} `;
   }
 
+  // User puts in a dollar amount for cost per night which gets converted into cents.
+  if (options.minimum_price_per_night) {
+    queryParams.push(options.minimum_price_per_night);
+    queryString += `${filter(queryParams)} cost_per_night >= $${queryParams.length} * 100 `;
+  }
+
   if (options.maximum_price_per_night) {
-    queryParams.push(`${options.maximum_price_per_night}`);
+    queryParams.push(options.maximum_price_per_night);
     queryString += `${filter(queryParams)} cost_per_night <= $${queryParams.length} * 100 `;
   }
   
@@ -138,8 +138,13 @@ const getAllProperties = (options, limit = 10) => {
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
+  console.log(queryParams, queryString);
 
-  return pool.query(queryString, queryParams).then((res)=> res.rows);
+  return pool.query(queryString, queryParams)
+    .then((res)=> {
+      console.log(res.rows);
+      return res.rows;
+    });
 };
 
 /**
@@ -149,6 +154,7 @@ const getAllProperties = (options, limit = 10) => {
  */
 
 const addProperty = (property) => {
+  console.log(property);
   const queryString = `
   INSERT INTO properties (
     owner_id,
@@ -167,7 +173,7 @@ const addProperty = (property) => {
     number_of_bedrooms,
     active
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *;`;
+  VALUES ($1, $2, $3, $4, $5, $6 * 100, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *;`;
 
   const queryParams = [
     property.owner_id,
@@ -189,6 +195,7 @@ const addProperty = (property) => {
   
   return pool.query(queryString, queryParams)
     .then((res) => {
+      console.log(res.rows[0]);
       return res.rows[0];
     });
 };
