@@ -108,9 +108,15 @@ const getAllProperties = (options, limit = 10) => {
     queryString += `${filter(queryParams)} city LIKE $${queryParams.length} `;
   }
 
+  // User puts in a dollar amount for cost per night which gets converted into cents.
   if (options.minimum_price_per_night) {
     queryParams.push(`${options.minimum_price_per_night}`);
     queryString += `${filter(queryParams)} cost_per_night >= $${queryParams.length} * 100 `;
+  }
+
+  if (options.owner_id) {
+    queryParams.push(`${options.owner_id}`);
+    queryString += `${filter(queryParams)} owner_id = $${queryParams.length} `;
   }
 
   if (options.maximum_price_per_night) {
